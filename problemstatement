@@ -1,0 +1,11 @@
+Problem Statement
+What broke?
+
+The client's endpoints now send data in JSON format, which is being stored in the rawData column of our employees table. Previously, data was stored in a tabular structure, so our application is unable to process the data correctly.
+What do we need to do?
+
+Extract the JSON data from the rawData column.
+Populate the missing columns in the employees table so our application can continue working seamlessly with tabular data.
+Goal:
+
+Ensure that our app receives the data in the same tabular format it expects by parsing the JSON from rawData and transforming it back into structured columns.
