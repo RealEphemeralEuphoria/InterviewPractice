@@ -30,13 +30,14 @@ def ensure_production_table_exists():
 
 def move_to_production():
     """
-    Transfer fully tabularized data from Staging to Production.
+    Transfer fully tabularized data from Staging and non-JSON data from Dev to Production.
     """
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Fetch valid rows from Staging
+    # Step 1: Insert JSON-transformed data from Staging
     cursor.execute("""
+        INSERT OR IGNORE INTO Production (employeeId, fullName, role, department, salary, hireDate, email, terminationDate)
         SELECT employeeId, fullName, role, department, salary, hireDate, email, terminationDate
         FROM Staging
         WHERE fullName IS NOT NULL
@@ -46,21 +47,22 @@ def move_to_production():
           AND hireDate IS NOT NULL
           AND email IS NOT NULL;
     """)
-    valid_rows = cursor.fetchall()
 
-    # Insert valid rows into Production
-    cursor.executemany("""
-        INSERT INTO Production (employeeId, fullName, role, department, salary, hireDate, email, terminationDate)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-    """, valid_rows)
+    # Step 2: Insert non-JSON data directly from Dev
+    cursor.execute("""
+        INSERT OR IGNORE INTO Production (employeeId, fullName, role, department, salary, hireDate, email, terminationDate)
+        SELECT employeeId, fullName, role, department, salary, hireDate, email, terminationDate
+        FROM Dev
+        WHERE rawData IS NULL;
+    """)
 
     conn.commit()
     conn.close()
-    print(f"{len(valid_rows)} rows moved to Production.")
+    print("Data successfully moved to Production.")
 
 if __name__ == "__main__":
     # Step 1: Ensure the Production table exists
     ensure_production_table_exists()
 
-    # Step 2: Move tabularized data from Staging to Production
+    # Step 2: Move all relevant data to Production
     move_to_production()
