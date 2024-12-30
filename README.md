@@ -2,7 +2,7 @@ Technical Assessment Study Guide
 
 ## **Objective**
 
-This guide provides strategies and knowledge to excel in technical assessments involving JSON and SQLite databases. It emphasizes articulating your reasoning, trade-offs, and decisions effectively while showcasing technical expertise.
+This guide provides strategies and knowledge to excel in technical assessments involving JSON and SQLite databases. It emphasizes articulating your reasoning, trade-offs, and decisions effectively while showcasing technical expertise. Additionally, it was a playground for "Resolving a client issue in which the client unannouncedly began sending us JSON instead of tabularized data".
 
 ---
 
