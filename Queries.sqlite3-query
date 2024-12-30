@@ -1,0 +1,11 @@
+UPDATE employees
+SET
+    fullName = json_extract(rawData, '$.fullName'),
+    role = json_extract(rawData, '$.role.title'),
+    department_name = json_extract(rawData, '$.department.name'),
+    department_location = json_extract(rawData, '$.department.location'),
+    salary = json_extract(rawData, '$.salary'),
+    hireDate = json_extract(rawData, '$.hireDate'),
+    email = json_extract(rawData, '$.email'),
+    terminationDate = json_extract(rawData, '$.terminationDate')
+WHERE rawData IS NOT NULL;
