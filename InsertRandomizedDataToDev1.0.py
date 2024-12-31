@@ -56,7 +56,7 @@ def insert_random_data():
     cursor = conn.cursor()
 
     # Insert (x): new rows with only rawData populated
-    for _ in range(40):
+    for _ in range(5000):
         raw_data = generate_random_json()
         cursor.execute("""
             INSERT INTO Dev (rawData)

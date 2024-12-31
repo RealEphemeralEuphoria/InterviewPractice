@@ -1,5 +1,6 @@
-UPDATE employees
-SET
+-- database: /path/to/database.db
+--UPDATE employees
+--SET
     fullName = json_extract(rawData, '$.fullName'),
     role = json_extract(rawData, '$.role.title'),
     department_name = json_extract(rawData, '$.department.name'),
@@ -8,4 +9,55 @@ SET
     hireDate = json_extract(rawData, '$.hireDate'),
     email = json_extract(rawData, '$.email'),
     terminationDate = json_extract(rawData, '$.terminationDate')
-WHERE rawData IS NOT NULL;
+--WHERE rawData IS NOT NULL;
+
+---------------------------------------------------------------------------------
+
+--Use Json Extract to pull all users with a certain title and provide a total count
+SELECT 
+    JSON_EXTRACT(rawData, '$.role.title') AS role,
+    COUNT(*) AS totalCount
+FROM Staging
+WHERE JSON_EXTRACT(rawData, '$.role.title') = 'Senior Developer'
+GROUP BY JSON_EXTRACT(rawData, '$.role.title');
+
+--Use Json Extract to pull all users with a certain title
+SELECT 
+    JSON_EXTRACT(rawData, '$.employeeId') AS employeeId,
+    JSON_EXTRACT(rawData, '$.fullName') AS fullName,
+    JSON_EXTRACT(rawData, '$.role.title') AS role
+FROM Staging
+WHERE JSON_EXTRACT(rawData, '$.role.title') = 'Senior Developer';
+
+---------------------------------------------------------------------------------
+
+--List all employees with a salary greater than <100,000>.
+SELECT 
+    JSON_EXTRACT(rawData, '$.employeeId') AS employeeId,
+    JSON_EXTRACT(rawData, '$.fullName') AS fullName,
+    JSON_EXTRACT(rawData, '$.salary') AS salary
+FROM Staging
+WHERE JSON_EXTRACT(rawData, '$.salary') > 100000;
+
+--Count all employees with a salary greater than <100,000>.
+SELECT 
+    JSON_EXTRACT(rawData, '$.role.title') AS role,
+    COUNT(*) AS totalCount
+FROM Staging
+WHERE JSON_EXTRACT(rawData, '$.role.title') = 'Senior Developer'
+GROUP BY JSON_EXTRACT(rawData, '$.role.title');
+
+---------------------------------------------------------------------------------
+
+--Extract all department names from Json
+SELECT DISTINCT JSON_EXTRACT(rawData, '$.department.name') AS departmentName
+FROM Staging;
+
+---------------------------------------------------------------------------------
+
+--Total Headcount per Department
+SELECT 
+    JSON_EXTRACT(rawData, '$.department.name') AS departmentName,
+    COUNT(*) AS employeeCount
+FROM Staging
+GROUP BY JSON_EXTRACT(rawData, '$.department.name');
