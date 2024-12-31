@@ -61,3 +61,5 @@ SELECT
     COUNT(*) AS employeeCount
 FROM Staging
 GROUP BY JSON_EXTRACT(rawData, '$.department.name');
+
+Test Stuff
