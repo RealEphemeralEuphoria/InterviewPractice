@@ -1,6 +1,6 @@
 -- database: /path/to/database.db
---UPDATE employees
---SET
+-- UPDATE employees
+-- SET
     fullName = json_extract(rawData, '$.fullName'),
     role = json_extract(rawData, '$.role.title'),
     department_name = json_extract(rawData, '$.department.name'),
@@ -9,11 +9,11 @@
     hireDate = json_extract(rawData, '$.hireDate'),
     email = json_extract(rawData, '$.email'),
     terminationDate = json_extract(rawData, '$.terminationDate')
---WHERE rawData IS NOT NULL;
+-- WHERE rawData IS NOT NULL;
 
 ---------------------------------------------------------------------------------
 
---Use Json Extract to pull all users with a certain title and provide a total count
+-- Use Json Extract to pull all users with a certain title and provide a total count
 SELECT 
     JSON_EXTRACT(rawData, '$.role.title') AS role,
     COUNT(*) AS totalCount
@@ -21,7 +21,7 @@ FROM Staging
 WHERE JSON_EXTRACT(rawData, '$.role.title') = 'Senior Developer'
 GROUP BY JSON_EXTRACT(rawData, '$.role.title');
 
---Use Json Extract to pull all users with a certain title
+-- Use Json Extract to pull all users with a certain title
 SELECT 
     JSON_EXTRACT(rawData, '$.employeeId') AS employeeId,
     JSON_EXTRACT(rawData, '$.fullName') AS fullName,
@@ -31,7 +31,7 @@ WHERE JSON_EXTRACT(rawData, '$.role.title') = 'Senior Developer';
 
 ---------------------------------------------------------------------------------
 
---List all employees with a salary greater than <100,000>.
+-- List all employees with a salary greater than <100,000>.
 SELECT 
     JSON_EXTRACT(rawData, '$.employeeId') AS employeeId,
     JSON_EXTRACT(rawData, '$.fullName') AS fullName,
@@ -39,7 +39,7 @@ SELECT
 FROM Staging
 WHERE JSON_EXTRACT(rawData, '$.salary') > 100000;
 
---Count all employees with a salary greater than <100,000>.
+-- Count all employees with a salary greater than <100,000>.
 SELECT 
     JSON_EXTRACT(rawData, '$.role.title') AS role,
     COUNT(*) AS totalCount
@@ -49,15 +49,50 @@ GROUP BY JSON_EXTRACT(rawData, '$.role.title');
 
 ---------------------------------------------------------------------------------
 
---Extract all department names from Json
+-- Extract all department names from Json
 SELECT DISTINCT JSON_EXTRACT(rawData, '$.department.name') AS departmentName
 FROM Staging;
 
 ---------------------------------------------------------------------------------
 
---Total Headcount per Department
+-- Total Headcount per Department
 SELECT 
     JSON_EXTRACT(rawData, '$.department.name') AS departmentName,
     COUNT(*) AS employeeCount
 FROM Staging
 GROUP BY JSON_EXTRACT(rawData, '$.department.name');
+
+---------------------------------------------------------------------------------
+
+--JSON EACH
+
+-- Extract and Flatten Responsibilities
+-- Each employee has a list of responsibilities in their JSON. Use JSON_EACH to extract and flatten these into individual rows.
+
+SELECT 
+    JSON_EXTRACT(rawData, '$.fullName') AS fullName,
+    JSON_EXTRACT(rawData, '$.role.title') AS role,
+    value AS responsibility
+FROM Staging, JSON_EACH(JSON_EXTRACT(rawData, '$.role.responsibilities'));
+
+----
+
+-- Count responsibilities for each employee
+
+SELECT 
+    JSON_EXTRACT(rawData, '$.fullName') AS fullName,
+    COUNT(value) AS responsibilityCount
+FROM Staging, JSON_EACH(JSON_EXTRACT(rawData, '$.role.responsibilities'))
+GROUP BY JSON_EXTRACT(rawData, '$.fullName');
+
+-- List Employees with a Specific Responsibility
+-- Find employees who are responsible for "Mentor."
+
+SELECT 
+    JSON_EXTRACT(rawData, '$.fullName') AS fullName,
+    JSON_EXTRACT(rawData, '$.role.title') AS role
+FROM Staging, JSON_EACH(JSON_EXTRACT(rawData, '$.role.responsibilities'))
+WHERE value = 'Mentor';
+
+---
+
